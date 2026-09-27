@@ -1,6 +1,6 @@
 import { Check, Copy } from 'lucide-preact';
 import { useMemo, useState } from 'preact/hooks';
-import { t } from '../i18n';
+import { ct as t } from '../lang';
 import { qrPath } from '../qr';
 import { toast } from './overlay';
 import { Button, cx } from './ui';

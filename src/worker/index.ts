@@ -26,7 +26,8 @@ export default {
       } else if (underPath(pathname, general.panelPath)) {
         return await panelFetch(request, env, ctx, general);
       } else if (underPath(pathname, general.subPath)) {
-        return await handleSub(request, env, ctx, general);
+        const res = await handleSub(request, env, ctx, general);
+        if (res) return res;
       }
       const security = await getSettings(env.DB, 'security');
       return decoy(request, security.decoy);

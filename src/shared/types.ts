@@ -77,3 +77,68 @@ export interface PlanDto {
 }
 
 export type BulkAction = 'enable' | 'disable' | 'delete' | 'reset' | 'extend' | 'add_data' | 'revoke';
+
+export interface OperatorConfigDto {
+  /** Preferred ports for this ISP; empty = global ports. */
+  ports?: number[];
+  fingerprint?: string;
+  fragment?: { enabled: boolean; packets?: string; length?: string; interval?: string };
+}
+
+export interface OperatorDto {
+  code: string;
+  nameFa: string;
+  nameEn: string;
+  asns: number[];
+  enabled: boolean;
+  sort: number;
+  config: OperatorConfigDto;
+  builtin: boolean;
+  ips: { total: number; enabled: number; healthy: number };
+}
+
+export interface CleanIpDto {
+  id: number;
+  operator: string;
+  address: string;
+  port: number;
+  label: string;
+  enabled: boolean;
+  healthy: boolean;
+  latencyMs: number | null;
+  checkedAt: number | null;
+}
+
+/** Data behind the subscriber portal (`/<sub>/<token>/info`). */
+export interface PortalData {
+  brand: string;
+  announcement: string;
+  supportUrl: string;
+  lang: 'fa' | 'en';
+  user: {
+    name: string;
+    status: UserStatus;
+    dataLimit: number;
+    up: number;
+    down: number;
+    used: number;
+    expireAt: number | null;
+    durationDays: number | null;
+    resetStrategy: ResetStrategy;
+    createdAt: number;
+    lastOnlineAt: number | null;
+  };
+  subUrl: string;
+  formats: { b64: string; clash: string; singbox: string; xray: string };
+  operator: {
+    current: string | null;
+    detected: string | null;
+    saved: string | null;
+    source: 'param' | 'saved' | 'asn' | 'default';
+    list: { code: string; fa: string; en: string }[];
+  };
+  countries: { code: string; flag: string; fa: string; en: string }[];
+  configs: { name: string; proto: 'vless' | 'trojan'; country: string | null; uri: string }[];
+  fragment: boolean;
+  now: number;
+}

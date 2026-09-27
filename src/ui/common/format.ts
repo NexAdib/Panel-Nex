@@ -1,4 +1,4 @@
-import { lang, locale } from './i18n';
+import { lang, locale } from './lang';
 
 const UNITS = ['B', 'KB', 'MB', 'GB', 'TB', 'PB'];
 

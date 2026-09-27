@@ -1,6 +1,7 @@
 import type { Hono } from 'hono';
 import type { AppEnv } from './context';
 import { exitRoutes } from './exits';
+import { operatorRoutes } from './operators';
 import { planRoutes } from './plans';
 import { systemRoutes } from './system';
 import { userRoutes } from './users';
@@ -11,4 +12,5 @@ export function registerApi(api: Hono<AppEnv>): void {
   userRoutes(api);
   planRoutes(api);
   exitRoutes(api);
+  operatorRoutes(api);
 }

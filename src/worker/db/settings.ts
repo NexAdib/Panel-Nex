@@ -23,18 +23,23 @@ const domainRule = z
   .regex(/^[a-z0-9.*_-]{1,253}$/);
 
 const schemas: { [K in SettingsGroup]: z.ZodType<SettingsMap[K]> } = {
-  general: z.object({
-    panelPath: pathSeg,
-    subPath: pathSeg,
-    wsPath: pathSeg,
-    domains: z.array(host).max(50),
-    subHost: z.union([host, z.literal('')]),
-    brandTitle: z.string().trim().min(1).max(40),
-    supportUrl: z.string().trim().max(200),
-    announcement: z.string().max(1000),
-    timezone: z.string().min(1).max(64),
-    language: z.enum(['fa', 'en']),
-  }),
+  general: z
+    .object({
+      panelPath: pathSeg,
+      subPath: pathSeg,
+      wsPath: pathSeg,
+      domains: z.array(host).max(50),
+      subHost: z.union([host, z.literal('')]),
+      brandTitle: z.string().trim().min(1).max(40),
+      supportUrl: z.string().trim().max(200),
+      announcement: z.string().max(1000),
+      timezone: z.string().min(1).max(64),
+      language: z.enum(['fa', 'en']),
+    })
+    .refine((g) => new Set([g.panelPath, g.subPath, g.wsPath]).size === 3, {
+      message: 'paths_must_differ',
+      path: ['subPath'],
+    }),
   proxy: z.object({
     vless: z.boolean(),
     trojan: z.boolean(),

@@ -108,12 +108,12 @@ const INPUT_BASE =
 export function Input(
   props: JSX.InputHTMLAttributes<HTMLInputElement> & { ltr?: boolean; invalid?: boolean },
 ) {
-  const { ltr, invalid, class: cls, ...rest } = props;
+  const { ltr, invalid, class: cls, dir, ...rest } = props;
   return (
     <input
       {...rest}
       class={cx(INPUT_BASE, 'h-11', ltr && 'ltr-num text-left', invalid && 'border-bad', cls as string)}
-      dir={ltr ? 'ltr' : undefined}
+      dir={ltr ? 'ltr' : dir}
     />
   );
 }

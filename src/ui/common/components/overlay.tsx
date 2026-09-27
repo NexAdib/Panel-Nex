@@ -2,7 +2,7 @@ import { signal } from '@preact/signals';
 import { CircleAlert, CircleCheck, Info, X } from 'lucide-preact';
 import type { ComponentChildren } from 'preact';
 import { useEffect, useRef } from 'preact/hooks';
-import { t } from '../i18n';
+import { ct as t } from '../lang';
 import { Button, cx } from './ui';
 
 function useEscape(open: boolean, onClose: () => void) {

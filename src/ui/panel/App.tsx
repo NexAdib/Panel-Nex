@@ -27,7 +27,9 @@ import { PrefToggles } from './components/prefs';
 import { ComingSoon } from './pages/ComingSoon';
 import { DashboardPage } from './pages/Dashboard';
 import { ExitsPage } from './pages/ExitsPage';
+import { OperatorsPage } from './pages/OperatorsPage';
 import { PlansPage } from './pages/PlansPage';
+import { SubscriptionPage } from './pages/SubscriptionPage';
 import { UsersPage } from './pages/users/UsersPage';
 import { navigate, route } from './router';
 
@@ -51,8 +53,8 @@ const NAV: { group: TKey; items: NavItem[] }[] = [
     group: 'nav_network',
     items: [
       { path: '/exits', key: 'nav_exits', icon: Globe, page: ExitsPage },
-      { path: '/operators', key: 'nav_operators', icon: Signal, page: ComingSoon },
-      { path: '/subscription', key: 'nav_subscription', icon: Link2, page: ComingSoon },
+      { path: '/operators', key: 'nav_operators', icon: Signal, page: OperatorsPage },
+      { path: '/subscription', key: 'nav_subscription', icon: Link2, page: SubscriptionPage },
       { path: '/warp', key: 'nav_warp', icon: Gamepad2, page: ComingSoon },
       { path: '/filter', key: 'nav_filter', icon: Filter, page: ComingSoon },
     ],

@@ -3,6 +3,7 @@
 //   node scripts/screens.mjs <baseUrl> <panelPath> <user> <pass> <outDir> [shot ...]
 // shot = name:hash:lang:theme:WIDTHxHEIGHT[:clickSelector]
 //   e.g. users-fa:#/users:fa:dark:1366x860   form:#/users:fa:dark:1366x860:button.grad-brand
+//   A hash starting with @ is a path from the site root, e.g. portal:@/sub/TOKEN:fa:dark:400x860:nologin
 import { existsSync } from 'node:fs';
 import { chromium } from 'playwright';
 
@@ -35,7 +36,7 @@ for (const spec of shots) {
   const page = await ctx.newPage();
   page.on('console', (m) => m.type() === 'error' && errors.push(`${name}: ${m.text()}`));
   page.on('pageerror', (e) => errors.push(`${name}: ${e.message}`));
-  await page.goto(`${base}${panelPath}${hash}`);
+  await page.goto(hash.startsWith('@') ? `${base}${hash.slice(1)}` : `${base}${panelPath}${hash}`);
   if (click !== 'nologin') {
     await page.waitForSelector('input[autocomplete="username"]');
     await page.fill('input[autocomplete="username"]', user);
@@ -48,7 +49,7 @@ for (const spec of shots) {
       await page.waitForTimeout(600);
     }
   } else {
-    await page.waitForTimeout(600);
+    await page.waitForTimeout(1200);
   }
   await page.screenshot({ path: `${outDir}/${name}.png` });
   await ctx.close();
