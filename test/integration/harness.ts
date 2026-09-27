@@ -35,6 +35,8 @@ export function buildWorker(): Promise<string> {
 
 export interface TestWorker {
   mf: Miniflare;
+  /** Real HTTP origin of the local workerd, e.g. http://127.0.0.1:43123 */
+  url: URL;
   fetch(path: string, init?: RequestInit & { cookie?: string }): Promise<Response>;
   dispose(): Promise<void>;
 }
@@ -50,9 +52,10 @@ export async function startWorker(bindings: Record<string, string> = {}): Promis
       bindings,
     }),
   );
-  await mf.ready;
+  const url = await mf.ready;
   return {
     mf,
+    url,
     async fetch(path, init = {}) {
       const headers = new Headers(init.headers);
       if (!headers.has('cf-connecting-ip')) headers.set('cf-connecting-ip', '203.0.113.7');

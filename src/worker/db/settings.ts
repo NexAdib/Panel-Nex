@@ -43,7 +43,7 @@ const schemas: { [K in SettingsGroup]: z.ZodType<SettingsMap[K]> } = {
     fingerprint: z.string().max(20),
     alpn: z.string().max(40),
     earlyData: z.number().int().min(0).max(8192),
-    dnsServer: z.string().regex(/^\d{1,3}(\.\d{1,3}){3}$/),
+    dnsServer: z.string().regex(/^\d{1,3}(\.\d{1,3}){3}(:\d{1,5})?$/),
     nat64Prefixes: z
       .array(
         z

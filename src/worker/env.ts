@@ -6,6 +6,8 @@ export interface Env {
   KV?: KVNamespace;
   /** Optional token required by /install when set. */
   SETUP_TOKEN?: string;
+  /** Test hook: usage flush interval in ms (default 60000). */
+  USAGE_FLUSH_MS?: string;
 }
 
 /** Build-time constants injected by the bundler. */
