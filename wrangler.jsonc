@@ -5,6 +5,9 @@
   // single-file dist/worker.js (UI embedded) and deploys it without re-bundling.
   "name": "nexadib",
   "main": "src/worker/index.ts",
+  // Builds the panel UI and embeds it before every deploy, so "wrangler deploy"
+  // (and Cloudflare's "Import a repository") works with no extra settings.
+  "build": { "command": "npm run build:ui", "watch_dir": "src/ui" },
   "compatibility_date": "2026-09-01",
   "workers_dev": true,
   "preview_urls": false,
