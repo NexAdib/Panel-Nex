@@ -14,6 +14,7 @@
     "formatter": { "quoteStyle": "single", "semicolons": "always", "trailingCommas": "all" }
   },
   "json": { "parser": { "allowComments": true, "allowTrailingCommas": true } },
+  "css": { "parser": { "tailwindDirectives": true } },
   "linter": {
     "enabled": true,
     "rules": {

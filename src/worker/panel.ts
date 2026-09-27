@@ -12,7 +12,7 @@ const PUBLIC_API = new Set(['/auth/status', '/auth/login', '/auth/sso', '/auth/c
 const apps = new Map<string, Hono<AppEnv>>();
 
 function buildApp(base: string): Hono<AppEnv> {
-  const app = new Hono<AppEnv>().basePath(base);
+  const app = new Hono<AppEnv>({ strict: false }).basePath(base);
   app.onError(onError);
   app.use('*', async (c, next) => {
     c.set('base', base);

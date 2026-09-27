@@ -1,0 +1,165 @@
+@import "tailwindcss";
+@import "@fontsource-variable/vazirmatn";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* NexAdib design tokens. Components use semantic names so both themes stay in sync. */
+:root {
+  --bg: #f5f6fa;
+  --bg-2: #eceef5;
+  --surface: #ffffff;
+  --surface-2: #f8f9fc;
+  --line: #e3e6ef;
+  --line-2: #d6dae6;
+  --fg: #111526;
+  --fg-2: #3c4459;
+  --muted: #6b7489;
+  --brand: #f06a2e;
+  --brand-2: #f4b41a;
+  --brand-fg: #1b1206;
+  --ok: #059669;
+  --warn: #b7791f;
+  --bad: #dc2626;
+  --info: #0284c7;
+  --ring: rgb(240 106 46 / 0.35);
+  --shadow: 0 1px 2px rgb(17 21 38 / 0.04), 0 8px 24px rgb(17 21 38 / 0.06);
+  color-scheme: light;
+}
+
+.dark {
+  --bg: #090b12;
+  --bg-2: #0d1019;
+  --surface: #11141f;
+  --surface-2: #161a27;
+  --line: #1e2332;
+  --line-2: #2a3044;
+  --fg: #eef1f8;
+  --fg-2: #b4bccd;
+  --muted: #7d869b;
+  --brand: #ff7a3d;
+  --brand-2: #ffc53d;
+  --brand-fg: #1b1206;
+  --ok: #34d399;
+  --warn: #fbbf24;
+  --bad: #f87171;
+  --info: #38bdf8;
+  --ring: rgb(255 122 61 / 0.35);
+  --shadow: 0 1px 0 rgb(255 255 255 / 0.02), 0 12px 32px rgb(0 0 0 / 0.45);
+  color-scheme: dark;
+}
+
+@theme inline {
+  --font-sans:
+    "Vazirmatn Variable", Vazirmatn, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Tahoma, sans-serif;
+  --color-bg: var(--bg);
+  --color-bg-2: var(--bg-2);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-line: var(--line);
+  --color-line-2: var(--line-2);
+  --color-fg: var(--fg);
+  --color-fg-2: var(--fg-2);
+  --color-muted: var(--muted);
+  --color-brand: var(--brand);
+  --color-brand-2: var(--brand-2);
+  --color-brand-fg: var(--brand-fg);
+  --color-ok: var(--ok);
+  --color-warn: var(--warn);
+  --color-bad: var(--bad);
+  --color-info: var(--info);
+  --shadow-card: var(--shadow);
+  --radius-xl2: 1.1rem;
+}
+
+@layer base {
+  html,
+  body {
+    @apply bg-bg text-fg antialiased;
+    font-feature-settings: "ss01";
+    -webkit-tap-highlight-color: transparent;
+  }
+  body {
+    min-height: 100dvh;
+    font-size: 14px;
+  }
+  ::selection {
+    background: var(--ring);
+  }
+  :focus-visible {
+    outline: 2px solid var(--brand);
+    outline-offset: 2px;
+  }
+  input,
+  select,
+  textarea {
+    font-size: 16px; /* prevent iOS zoom */
+  }
+  @media (min-width: 768px) {
+    input,
+    select,
+    textarea {
+      font-size: 14px;
+    }
+  }
+  .ltr-num {
+    direction: ltr;
+    unicode-bidi: isolate;
+  }
+}
+
+@layer components {
+  .card {
+    @apply rounded-xl2 border border-line bg-surface shadow-card;
+  }
+  .grad-brand {
+    background-image: linear-gradient(120deg, var(--brand), var(--brand-2));
+  }
+  .text-grad {
+    background-image: linear-gradient(120deg, var(--brand), var(--brand-2));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .glass {
+    background: color-mix(in srgb, var(--surface) 78%, transparent);
+    backdrop-filter: blur(14px) saturate(140%);
+    -webkit-backdrop-filter: blur(14px) saturate(140%);
+  }
+  .aurora {
+    background:
+      radial-gradient(
+        600px 300px at 90% -10%,
+        color-mix(in srgb, var(--brand) 22%, transparent),
+        transparent 70%
+      ),
+      radial-gradient(
+        500px 280px at -10% 10%,
+        color-mix(in srgb, var(--brand-2) 14%, transparent),
+        transparent 70%
+      );
+  }
+  .skeleton {
+    @apply rounded-md bg-line;
+    animation: pulse 1.4s ease-in-out infinite;
+  }
+}
+
+@keyframes pulse {
+  50% {
+    opacity: 0.45;
+  }
+}
+
+@keyframes pop-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.animate-pop {
+  animation: pop-in 0.18s ease-out;
+}
