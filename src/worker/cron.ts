@@ -1,8 +1,11 @@
-import { isInstalled } from './db/meta';
+import { getMeta, isInstalled, setMeta } from './db/meta';
 import { ensureSchema } from './db/migrate';
 import type { Env } from './env';
+import { runHealthChecks } from './exits/health';
 
-/** Periodic maintenance. Extended by later milestones (usage, resets, health, WARP). */
+const HEALTH_EVERY_MS = 9 * 60_000;
+
+/** Periodic maintenance: cleanup, exit health (usage aggregation and WARP join later). */
 export async function runCron(env: Env, _ctx: ExecutionContext): Promise<void> {
   await ensureSchema(env.DB);
   if (!(await isInstalled(env.DB))) return;
@@ -15,4 +18,13 @@ export async function runCron(env: Env, _ctx: ExecutionContext): Promise<void> {
       now - 86_400_000,
     ),
   ]);
+
+  // Exit health: roughly every ten minutes, a bounded batch of the stalest endpoints.
+  const lastCheck = Number((await getMeta(env.DB, 'exits_checked_at')) ?? 0);
+  if (now - lastCheck >= HEALTH_EVERY_MS) {
+    await setMeta(env.DB, 'exits_checked_at', String(now));
+    await runHealthChecks(env, { limit: 8 }).catch((err) =>
+      console.error('exit health', err instanceof Error ? err.message : err),
+    );
+  }
 }

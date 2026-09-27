@@ -26,6 +26,7 @@ import { type TKey, t } from '../common/i18n';
 import { PrefToggles } from './components/prefs';
 import { ComingSoon } from './pages/ComingSoon';
 import { DashboardPage } from './pages/Dashboard';
+import { ExitsPage } from './pages/ExitsPage';
 import { PlansPage } from './pages/PlansPage';
 import { UsersPage } from './pages/users/UsersPage';
 import { navigate, route } from './router';
@@ -49,7 +50,7 @@ const NAV: { group: TKey; items: NavItem[] }[] = [
   {
     group: 'nav_network',
     items: [
-      { path: '/exits', key: 'nav_exits', icon: Globe, page: ComingSoon },
+      { path: '/exits', key: 'nav_exits', icon: Globe, page: ExitsPage },
       { path: '/operators', key: 'nav_operators', icon: Signal, page: ComingSoon },
       { path: '/subscription', key: 'nav_subscription', icon: Link2, page: ComingSoon },
       { path: '/warp', key: 'nav_warp', icon: Gamepad2, page: ComingSoon },

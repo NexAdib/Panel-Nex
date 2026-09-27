@@ -76,7 +76,7 @@ export async function buildInstallStatements(
         db
           .prepare(
             `INSERT INTO exits (country, type, address, port, label, enabled, created_at)
-             SELECT ?1, 'proxyip', ?2, 443, 'suggested', 1, ?3
+             SELECT ?1, 'proxyip', ?2, 0, 'suggested', 1, ?3
              WHERE NOT EXISTS (SELECT 1 FROM exits WHERE address = ?2)`,
           )
           .bind(c.code, host, now),
