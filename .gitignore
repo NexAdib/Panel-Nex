@@ -1,0 +1,10 @@
+node_modules/
+dist/
+.wrangler/
+.dev.vars
+*.log
+.DS_Store
+src/worker/assets.gen.ts
+test-results/
+playwright-report/
+coverage/

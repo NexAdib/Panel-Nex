@@ -1,0 +1,17 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  // NexAdib — one independent panel per Cloudflare account.
+  // `npm run dev` runs the TypeScript sources; `npm run deploy` builds the
+  // single-file dist/worker.js (UI embedded) and deploys it without re-bundling.
+  "name": "nexadib",
+  "main": "src/worker/index.ts",
+  "compatibility_date": "2026-09-01",
+  "workers_dev": true,
+  "preview_urls": false,
+  // D1 is the only required storage. Wrangler creates the database on first deploy.
+  "d1_databases": [{ "binding": "DB", "database_name": "nexadib-db" }],
+  // Usage aggregation, limits, resets, WARP revocation and exit health checks.
+  "triggers": { "crons": ["*/5 * * * *"] },
+  "define": { "__NEXADIB_VERSION__": "\"dev\"", "__NEXADIB_COMMIT__": "\"\"" },
+  "observability": { "enabled": true }
+}

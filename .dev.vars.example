@@ -1,0 +1,8 @@
+# NexAdib first-run setup.
+#
+# SETUP_TOKEN is optional but recommended. When set, the /install page only accepts
+# the first admin password together with this token, so nobody who discovers the
+# address before you can claim the panel. Generate one with `openssl rand -hex 16`.
+# Panels installed from the built-in Cloudflare account manager are claimed
+# automatically and never expose an open /install window.
+SETUP_TOKEN=
