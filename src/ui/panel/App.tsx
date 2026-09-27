@@ -26,6 +26,8 @@ import { type TKey, t } from '../common/i18n';
 import { PrefToggles } from './components/prefs';
 import { ComingSoon } from './pages/ComingSoon';
 import { DashboardPage } from './pages/Dashboard';
+import { PlansPage } from './pages/PlansPage';
+import { UsersPage } from './pages/users/UsersPage';
 import { navigate, route } from './router';
 
 interface NavItem {
@@ -40,8 +42,8 @@ const NAV: { group: TKey; items: NavItem[] }[] = [
     group: 'nav_main',
     items: [
       { path: '/dashboard', key: 'nav_dashboard', icon: LayoutDashboard, page: DashboardPage },
-      { path: '/users', key: 'nav_users', icon: Users, page: ComingSoon },
-      { path: '/plans', key: 'nav_plans', icon: Layers, page: ComingSoon },
+      { path: '/users', key: 'nav_users', icon: Users, page: UsersPage },
+      { path: '/plans', key: 'nav_plans', icon: Layers, page: PlansPage },
     ],
   },
   {
@@ -67,11 +69,6 @@ const NAV: { group: TKey; items: NavItem[] }[] = [
 
 const ALL = NAV.flatMap((g) => g.items);
 const MOBILE_MAIN = ['/dashboard', '/users', '/exits', '/accounts'];
-
-export function registerPage(path: string, page: ComponentType): void {
-  const item = ALL.find((i) => i.path === path);
-  if (item) item.page = page;
-}
 
 function current(): NavItem {
   const first = `/${route.value.parts[0] ?? 'dashboard'}`;

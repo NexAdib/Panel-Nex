@@ -102,6 +102,10 @@ export function authPublicRoutes(api: Hono<AppEnv>): void {
     const sec = await getSettings(db, 'security');
     const ip = ipOf(c) ?? 'unknown';
     const keys = [`ip:${ip}`, `user:${body.username.toLowerCase()}`];
+    const failKeys = [
+      { k: keys[0]!, max: sec.loginMaxFails },
+      { k: keys[1]!, max: sec.loginMaxFails * 10 },
+    ];
     const lock = await checkLock(db, keys);
     if (lock.locked) {
       c.header('retry-after', String(lock.retryAfterSec));
@@ -120,7 +124,7 @@ export function authPublicRoutes(api: Hono<AppEnv>): void {
       await hashPassword(body.password, 10_000);
     }
     if (!admin || !ok) {
-      await recordFailure(db, keys, sec.loginMaxFails, sec.lockMinutes);
+      await recordFailure(db, failKeys, sec.lockMinutes);
       await audit(db, body.username.slice(0, 32), 'login_failed', null, ip);
       return c.json({ error: 'invalid_credentials' }, 401);
     }
@@ -128,7 +132,7 @@ export function authPublicRoutes(api: Hono<AppEnv>): void {
       if (body.recovery) {
         const remaining = await useRecoveryCode(admin, body.recovery);
         if (!remaining) {
-          await recordFailure(db, keys, sec.loginMaxFails, sec.lockMinutes);
+          await recordFailure(db, failKeys, sec.lockMinutes);
           return c.json({ error: 'invalid_otp' }, 401);
         }
         await db
@@ -140,7 +144,7 @@ export function authPublicRoutes(api: Hono<AppEnv>): void {
         const step = await verifyTotp(admin.totp_secret, body.otp);
         const lastStep = Number((await getMeta(db, 'totp_last_step')) ?? 0);
         if (step === null || step <= lastStep) {
-          await recordFailure(db, keys, sec.loginMaxFails, sec.lockMinutes);
+          await recordFailure(db, failKeys, sec.lockMinutes);
           return c.json({ error: 'invalid_otp' }, 401);
         }
         await setMeta(db, 'totp_last_step', String(step));

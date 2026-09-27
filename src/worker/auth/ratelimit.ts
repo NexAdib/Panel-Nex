@@ -20,17 +20,23 @@ export async function checkLock(db: D1Database, keys: string[]): Promise<LockSta
     : { locked: false, retryAfterSec: 0 };
 }
 
-export async function recordFailure(
-  db: D1Database,
-  keys: string[],
-  maxFails: number,
-  lockMinutes: number,
-): Promise<void> {
+export interface FailureKey {
+  k: string;
+  /** Failures within the window before this key locks. */
+  max: number;
+}
+
+/**
+ * Counts a failed login. IP keys lock quickly; the username key uses a much higher
+ * threshold so a stranger cannot lock the owner out, while a distributed guesser
+ * is still throttled.
+ */
+export async function recordFailure(db: D1Database, keys: FailureKey[], lockMinutes: number): Promise<void> {
   const now = Date.now();
   const windowStart = now - lockMinutes * 60_000;
   const lockUntil = now + lockMinutes * 60_000;
   await db.batch(
-    keys.map((k) =>
+    keys.map(({ k, max }) =>
       db
         .prepare(
           `INSERT INTO login_attempts (k, fails, first_at, locked_until) VALUES (?1, 1, ?2, 0)
@@ -41,7 +47,7 @@ export async function recordFailure(
                WHEN (CASE WHEN login_attempts.first_at < ?3 THEN 1 ELSE login_attempts.fails + 1 END) >= ?4 THEN ?5
                ELSE login_attempts.locked_until END`,
         )
-        .bind(k, now, windowStart, maxFails, lockUntil),
+        .bind(k, now, windowStart, max, lockUntil),
     ),
   );
 }
