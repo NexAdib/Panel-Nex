@@ -1,4 +1,5 @@
 import {
+  Activity,
   Ban,
   CalendarPlus,
   Database,
@@ -11,13 +12,15 @@ import {
   Power,
   RotateCcw,
   Trash2,
+  Wifi,
 } from 'lucide-preact';
 import { useEffect, useState } from 'preact/hooks';
-import type { UserDto } from '../../../../shared/types';
+import type { UserDto, UserUsageDto } from '../../../../shared/types';
 import { ApiError, api } from '../../../common/api';
+import { TrafficBars } from '../../../common/components/chart';
 import { confirmDialog, Drawer, Modal, toast } from '../../../common/components/overlay';
 import { CopyButton, QrCode } from '../../../common/components/qr';
-import { Badge, Button, Ring } from '../../../common/components/ui';
+import { Badge, Button, Ring, Skeleton } from '../../../common/components/ui';
 import { fmtBytes, fmtDate, fmtNumber, fmtRelative } from '../../../common/format';
 import { t, tMaybe } from '../../../common/i18n';
 import { expiryText, STATUS_KEY, STATUS_TONE, usagePercent } from './labels';
@@ -57,6 +60,45 @@ function SecretRow({ label, value }: { label: string; value: string }) {
 }
 
 type Prompt = 'extend' | 'data' | null;
+
+function UsageSection({ userId }: { userId: number }) {
+  const [data, setData] = useState<UserUsageDto | null>(null);
+  useEffect(() => {
+    setData(null);
+    api<UserUsageDto>(`users/${userId}/usage`)
+      .then(setData)
+      .catch(() => {});
+  }, [userId]);
+  return (
+    <section class="rounded-2xl border border-line p-4">
+      <div class="mb-3 flex items-center gap-2 text-sm font-bold">
+        <Activity size={16} class="text-brand" />
+        {t('usage_30d')}
+      </div>
+      {data ? <TrafficBars data={data.daily} height={170} /> : <Skeleton class="h-36 w-full" />}
+      <div class="mt-4 mb-2 flex items-center gap-2 text-[13px] font-bold">
+        <Wifi size={15} class="text-brand" />
+        {t('recent_ips')}
+      </div>
+      {!data ? null : data.ips.length === 0 ? (
+        <p class="text-[12.5px] text-muted">{t('no_ips')}</p>
+      ) : (
+        <div class="flex flex-wrap gap-1.5">
+          {data.ips.slice(0, 12).map((ip) => (
+            <span
+              key={ip.ip}
+              title={fmtDate(ip.lastSeen, true)}
+              class="ltr-num rounded-lg border border-line bg-surface-2 px-2 py-1 font-mono text-[11.5px]"
+            >
+              <bdi dir="ltr">{ip.ip}</bdi>
+              <span class="ms-1.5 text-muted">{fmtRelative(ip.lastSeen)}</span>
+            </span>
+          ))}
+        </div>
+      )}
+    </section>
+  );
+}
 
 export function UserDetail({
   user,
@@ -168,6 +210,8 @@ export function UserDetail({
           </div>
         </section>
 
+        <UsageSection userId={u.id} />
+
         <section class="grid grid-cols-2 gap-2 sm:grid-cols-4">
           <Button size="sm" icon={<Pencil size={15} />} onClick={() => onEdit(u)}>
             {t('edit')}
@@ -250,7 +294,7 @@ export function UserDetail({
         <section class="divide-y divide-line rounded-2xl border border-line px-4">
           <Row label={t('ud_upload')} value={fmtBytes(u.usedUp)} />
           <Row label={t('ud_download')} value={fmtBytes(u.usedDown)} />
-          <Row label={t('ud_lifetime')} value={fmtBytes(u.lifetimeUsed + u.used)} />
+          <Row label={t('ud_lifetime')} value={fmtBytes(Math.max(u.lifetimeUsed, u.used))} />
           <Row label={t('f_devices')} value={u.deviceLimit ? fmtNumber(u.deviceLimit) : t('unlimited')} />
           <Row
             label={t('col_online')}

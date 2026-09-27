@@ -35,6 +35,7 @@ import {
 import { fmtBytes, fmtNumber, fmtRelative } from '../../../common/format';
 import { isRtl, t } from '../../../common/i18n';
 import { PageHeader } from '../../components/page';
+import { route } from '../../router';
 import { BulkCreate } from './BulkCreate';
 import { expiryText, STATUS_KEY, STATUS_TONE, usagePercent } from './labels';
 import { Chip } from './pickers';
@@ -47,13 +48,16 @@ type Sort = 'created' | 'name' | 'used' | 'expire' | 'online';
 
 export function UsersPage() {
   const [data, setData] = useState<UserListResponse | null>(null);
-  const [filter, setFilter] = useState<Filter>('all');
+  const [filter, setFilter] = useState<Filter>(() => {
+    const f = route.value.query.get('status') as Filter | null;
+    return f && FILTERS.includes(f) ? f : 'all';
+  });
   const [q, setQ] = useState('');
   const [sort, setSort] = useState<Sort>('created');
   const [page, setPage] = useState(1);
   const [size, setSize] = useState(25);
   const [selected, setSelected] = useState<Set<number>>(new Set());
-  const [formOpen, setFormOpen] = useState(false);
+  const [formOpen, setFormOpen] = useState(() => route.value.query.get('new') === '1');
   const [editing, setEditing] = useState<UserDto | null>(null);
   const [detail, setDetail] = useState<UserDto | null>(null);
   const [qrFor, setQrFor] = useState<UserDto | null>(null);

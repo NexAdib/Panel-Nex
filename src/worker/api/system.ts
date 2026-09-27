@@ -5,6 +5,7 @@ import { audit } from '../db/audit';
 import { getMeta } from '../db/meta';
 import { getSettingsWithVersion, saveSettings } from '../db/settings';
 import { HttpError } from '../lib/http';
+import { runMaintenance } from '../usage/maintenance';
 import { type AppEnv, actorOf, ipOf, readBody } from './context';
 
 export function systemRoutes(api: Hono<AppEnv>): void {
@@ -20,6 +21,9 @@ export function systemRoutes(api: Hono<AppEnv>): void {
       selfDeployable: typeof __NEXADIB_SELF__ !== 'undefined',
     });
   });
+
+  // Runs usage aggregation, resets and expiry now (the cron does this every 5 minutes).
+  api.post('/system/maintenance', async (c) => c.json(await runMaintenance(c.env)));
 
   api.get('/settings/:group', async (c) => {
     const grp = c.req.param('group') as SettingsGroup;

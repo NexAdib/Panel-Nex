@@ -142,3 +142,33 @@ export interface PortalData {
   fragment: boolean;
   now: number;
 }
+
+export interface DailyUsage {
+  day: string;
+  up: number;
+  down: number;
+}
+
+export interface OverviewDto {
+  users: Record<UserStatus | 'all', number> & { online: number; expiringSoon: number; nearLimit: number };
+  today: { up: number; down: number; conns: number; blocked: number };
+  last30: { up: number; down: number };
+  daily: (DailyUsage & { conns: number })[];
+  top: { id: number; name: string; status: UserStatus; total: number }[];
+  exits: { country: string; total: number; healthy: number }[];
+  recent: {
+    id: number;
+    createdAt: number;
+    actor: string;
+    action: string;
+    target: string | null;
+    details: string | null;
+  }[];
+  maintenanceAt: number | null;
+  timezone: string;
+}
+
+export interface UserUsageDto {
+  daily: DailyUsage[];
+  ips: { ip: string; lastSeen: number }[];
+}

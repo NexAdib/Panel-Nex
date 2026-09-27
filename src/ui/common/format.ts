@@ -9,7 +9,7 @@ export function fmtNumber(n: number, maxFrac = 0): string {
 /** 1536 → "1.5 KB" (Persian digits in fa). Uses binary units like the rest of the panel. */
 export function fmtBytes(n: number, frac = 1): string {
   if (!Number.isFinite(n) || n <= 0) return `${fmtNumber(0)} ${UNITS[0]}`;
-  const i = Math.min(UNITS.length - 1, Math.floor(Math.log(n) / Math.log(1024)));
+  const i = Math.max(0, Math.min(UNITS.length - 1, Math.floor(Math.log(n) / Math.log(1024))));
   const v = n / 1024 ** i;
   return `${fmtNumber(v, v >= 100 || i === 0 ? 0 : frac)} ${UNITS[i]}`;
 }

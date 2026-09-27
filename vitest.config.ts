@@ -10,6 +10,8 @@ export default defineConfig({
     include: ['test/unit/**/*.test.ts', 'test/integration/**/*.test.ts'],
     environment: 'node',
     testTimeout: 30_000,
+    // Each integration file boots its own workerd; cap parallelism to keep startup reliable.
+    maxWorkers: 4,
     hookTimeout: 60_000,
   },
 });

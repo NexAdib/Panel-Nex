@@ -6,6 +6,7 @@ import { registerApi } from './api/index';
 import { serveAsset } from './assets';
 import type { Env } from './env';
 import { isSameOriginMutation } from './lib/request';
+import { maybeMaintenance } from './usage/maintenance';
 
 const PUBLIC_API = new Set(['/auth/status', '/auth/login', '/auth/sso', '/auth/cloudflare']);
 
@@ -54,6 +55,7 @@ function buildApp(base: string): Hono<AppEnv> {
     const s = await currentSession(c);
     if (!s) return c.json({ error: 'unauthorized' }, 401);
     c.set('session', s);
+    maybeMaintenance(c.env, c.executionCtx);
     await next();
   });
   authPublicRoutes(api);

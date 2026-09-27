@@ -93,7 +93,10 @@ async function saveUser(c: Ctx, row: UserRow, patch: Partial<UserRow>, action: s
   const now = Date.now();
   const res = await c.env.DB.batch([
     c.env.DB.prepare(
-      `UPDATE users SET name = ?2, status = ?3, data_limit = ?4, used_up = ?5, used_down = ?6, expire_at = ?7,
+      // Usage counters are only written by explicit resets; otherwise the aggregator's
+      // concurrent increments would be overwritten.
+      `UPDATE users SET name = ?2, status = ?3, data_limit = ?4,
+         used_up = CASE WHEN ?27 = 1 THEN ?5 ELSE used_up END, used_down = CASE WHEN ?27 = 1 THEN ?6 ELSE used_down END, expire_at = ?7,
          duration_days = ?8, reset_strategy = ?9, last_reset_at = ?10, device_limit = ?11, allowed_exits = ?12,
          force_exit = ?13, operator = ?14, warp_enabled = ?15, filter_exempt = ?16, note = ?17, tags = ?18,
          disabled_reason = ?19, plan_id = ?20, uuid = ?21, trojan_password = ?22, trojan_hash = ?23,
@@ -126,6 +129,7 @@ async function saveUser(c: Ctx, row: UserRow, patch: Partial<UserRow>, action: s
       next.sub_token,
       now,
       expectRev ?? row.rev,
+      'used_up' in patch || 'used_down' in patch ? 1 : 0,
     ),
     auditStmt(c.env.DB, actorOf(c), action, `user:${row.id}`, ipOf(c), { name: next.name }),
   ]);

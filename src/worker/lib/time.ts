@@ -51,3 +51,33 @@ export function isResetDue(period: ResetPeriod, lastResetMs: number, nowTs: numb
       return false;
   }
 }
+
+const clockCache = new Map<string, Intl.DateTimeFormat>();
+
+/** Timestamp of the most recent local midnight in the given time zone. */
+export function startOfDay(tsMs: number, tz = 'Asia/Tehran'): number {
+  let f = clockCache.get(tz);
+  if (!f) {
+    try {
+      f = new Intl.DateTimeFormat('en-GB', {
+        timeZone: tz,
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hourCycle: 'h23',
+      });
+    } catch {
+      f = new Intl.DateTimeFormat('en-GB', {
+        timeZone: 'UTC',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hourCycle: 'h23',
+      });
+    }
+    clockCache.set(tz, f);
+  }
+  const parts = Object.fromEntries(f.formatToParts(new Date(tsMs)).map((p) => [p.type, p.value]));
+  const secs = Number(parts.hour) * 3600 + Number(parts.minute) * 60 + Number(parts.second);
+  return tsMs - secs * 1000 - (tsMs % 1000);
+}

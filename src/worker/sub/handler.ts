@@ -14,6 +14,7 @@ import type { Env } from '../env';
 import { json, PANEL_CSP } from '../lib/http';
 import { TtlLru } from '../lib/lru';
 import { clientIp, isSameOriginMutation } from '../lib/request';
+import { maybeMaintenance } from '../usage/maintenance';
 import { formatFromParam, formatFromUa, isBrowser, type SubFormat } from './detect';
 import { subHeaders } from './headers';
 import { countryLabel } from './nodes';
@@ -129,6 +130,7 @@ export async function handleSub(
   const db = env.DB;
   const row = await findByToken(db, token);
   if (!row) return null;
+  maybeMaintenance(env, ctx);
   const lang = langOf(url, general);
 
   if (action === 'op') {
@@ -154,7 +156,7 @@ export async function handleSub(
       db
         .prepare('UPDATE users SET operator = ?2, updated_at = ?3 WHERE id = ?1')
         .bind(row.id, op, Date.now()),
-      auditStmt(db, 'portal', 'user.operator', row.name, clientIp(request), { op }),
+      auditStmt(db, 'portal', 'user_operator', `user:${row.id}`, clientIp(request), { name: row.name, op }),
     ]);
     row.operator = op;
     const p = await prepare(db, {

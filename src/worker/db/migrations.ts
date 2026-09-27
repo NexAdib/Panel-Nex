@@ -82,7 +82,8 @@ export const MIGRATIONS: Migration[] = [
         sub_last_ua TEXT
       )`,
       `CREATE UNIQUE INDEX IF NOT EXISTS ux_users_name ON users(name COLLATE NOCASE)`,
-      `CREATE INDEX IF NOT EXISTS ix_users_status ON users(status)`,
+      `CREATE INDEX IF NOT EXISTS ix_users_status ON users(status, expire_at)`,
+      `CREATE INDEX IF NOT EXISTS ix_users_reset ON users(reset_strategy, last_reset_at)`,
       `CREATE INDEX IF NOT EXISTS ix_users_expire ON users(expire_at)`,
       `CREATE INDEX IF NOT EXISTS ix_users_created ON users(created_at)`,
       `CREATE TABLE IF NOT EXISTS plans (
